@@ -1,9 +1,14 @@
 function queueTime(customers, n) {
 	let time = 0;
 	let queues = new Array(n).fill(0);
-	for (let i = 0, len = customers.length; i < len; i++) {
-		
+	for (let customer of customers) {
+		let min = Math.min(...queues);
+		let i = queues.indexOf(min);
+		queues = queues.map(value => value - min);
+		time += min;
+		queues[i] = customer;
 	}
+	time += Math.max(...queues);
 	return time;
 }
 
