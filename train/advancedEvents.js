@@ -1,26 +1,34 @@
 function Event() {
-	this.subscribes = [];
+	let subscribes = [];
+	
+	this.subscribe = function(...funcs) {
+		for (let func of funcs) {
+			if (typeof func === 'function')	subscribes.push(func);
+		}
+		return funcs.length;
+	};
+
+	this.emit = function(...args) {
+		subscribes.forEach(func => func.call(this, ...args));
+	};
+
+	this.unsubscribe = function(...funcs) {
+		for (let func of funcs) subscribes.splice(subscribes.lastIndexOf(func), 1);
+		this.emit();
+		return funcs.length;
+	};
+
 	return this;
 }
 
-Event.prototype.subscribe = function(...funcs) {
-	for (let func of funcs) this.subscribes.push(func);
-}
-
-Event.prototype.emit = function(arg) {
-	this.subscribes.forEach(func => func(arg));
-}
-
-Event.prototype.unsubscribe = function(...funcs) {
-	for (let func of funcs) this.subscribes.splice(this.subscribes.indexOf(func), 1);
-}
 
 function l(arr) { arr.push('l'); }
 function o(arr) { arr.push('o'); }
 
 var e = new Event(),
-    bucket = [];
+	bucket = [];
 
+e.unsubscribe(l);
 e.subscribe(l, o, l);
 e.emit(bucket);
 
