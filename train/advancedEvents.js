@@ -1,20 +1,26 @@
 function Event() {
 	let subscribes = [];
-	
-	this.subscribe = function(...funcs) {
+	let sub_count = 0, emit_count = 0, unsub_count = 0;
+	this.subscribe = function (...funcs) {
 		for (let func of funcs) {
-			if (typeof func === 'function')	subscribes.push(func);
+			if (typeof func === 'function') subscribes.push(func);
 		}
 		return funcs.length;
 	};
 
-	this.emit = function(...args) {
-		subscribes.forEach(func => func.call(this, ...args));
+	this.emit = function (...args) {
+		// console.log(args);
+		that = this;
+		subscribes.forEach(func => {
+			func.apply(that, args);
+		});
+
 	};
 
-	this.unsubscribe = function(...funcs) {
-		for (let func of funcs) subscribes.splice(subscribes.lastIndexOf(func), 1);
-		this.emit();
+	this.unsubscribe = function (...funcs) {
+		for (let func of funcs) {
+			if ((i = subscribes.lastIndexOf(func)) !== -1) subscribes.splice(i, 1);
+		}
 		return funcs.length;
 	};
 
@@ -22,23 +28,21 @@ function Event() {
 }
 
 
-function l(arr) { arr.push('l'); }
-function o(arr) { arr.push('o'); }
+function Stub(func) {
+	return function _spy() {
+		_spy.calls = (_spy.calls || 0) + 1;
+		_spy.args = Array.prototype.splice.call(this, arguments);
+		_spy.ctx = this;
 
-var e = new Event(),
-	bucket = [];
+		if (typeof func === 'function') {
+			return func.apply(this, _spy.args);
+		}
+	}
+}
 
-e.unsubscribe(l);
-e.subscribe(l, o, l);
-e.emit(bucket);
+let e = new Event(),
+	h1 = new Stub(),
+	h2 = new Stub(h1);
 
-//bucket should be ['l', 'o', 'l']
-console.log(bucket, ['l', 'o', 'l']); 
-
-e.unsubscribe(o, l);
-bucket = [];
-
-e.emit(bucket); //bucket should be ['l']
-
-console.log(bucket, ['l']); 
-
+e.subscribe(h1, h2);
+e.emit();
