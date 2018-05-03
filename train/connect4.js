@@ -10,7 +10,7 @@ Connect4.prototype.play = function (col) {
     if (this.win) return `Game has finished!`;
     if (isFullColumn(this.board[col])) return `Column full!`;
     this.board = move(this.board, col, this.cur_player);
-    if (checkBoard(this.board)) {
+    if (checkBoard(this.board, this.cur_player)) {
         this.win = true;
         return `Player ${this.cur_player} wins!`;
     }
@@ -18,27 +18,28 @@ Connect4.prototype.play = function (col) {
     return `Player ${this.cur_player === 1 ? 2 : 1} has a turn`;
 };
 
-function checkBoard(board) {
-    let check = b => b.some(r => r.reduce((p, c) => p = c !== null ? [c,++p] : [c, 0], [r[0], 0])[1] >= 4);
+function checkBoard(board, player) {
+    console.log(board);
 
-    let diag = b => {
-        for (let i = 0; i < 4; i++) {
-            let bb = b.slice(i, i + 4);
-            let j = 0;
-            if (bb.every(l => l.length > j) && !!bb.reduce((p, c) => p === c[j++] ? p : NaN)) return true;
+    let fourInLine = (b) => b.some(line => line.reduce(({ val, max }, cur) => cur !== player ? { val: 0, max } : { val: val + 1, max: val + 1 > max ? val + 1 : max }, { val: 0, max: 0 }).max >= 4);
+
+    let transpose = (b) => b[0].map((_, i) => b.map(r => r[i]));
+
+    if (fourInLine(board)) return true;
+    if (fourInLine(transpose(board))) return true;
+
+    let diag = (b) => b.reduce((prev, cur, i) => cur[i] === player ? prev + 1 : prev); 
+
+    for (let i = 0; i < 4; i++) {
+        let bb = board.slice(i, i + 4);
+        for (let j = 0; j < 3; j++) {
+            b = bb.map(a => a.slice(j, j + 3));
+            if (diag(b)) return true;
+            if (diag(transpose(b))) return true;
         }
-        return false;
     }
 
-    let transpose = a => a[0].map((_, r) => a.map(c => c[r]));
-
-    let row = check(board);
-    let col = check(transpose(board));
-
-    let main_diag = diag(board);
-    let sec_diag = diag(transpose(board));
-
-    return row || col;
+    return false;
 }
 
 function isFullColumn(c) {
