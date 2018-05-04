@@ -1,6 +1,5 @@
 function Event() {
 	let subscribes = [];
-	let sub_count = 0, emit_count = 0, unsub_count = 0;
 	this.subscribe = function (...funcs) {
 		for (let func of funcs) {
 			if (typeof func === 'function') subscribes.push(func);
@@ -9,9 +8,7 @@ function Event() {
 	};
 
 	this.emit = function (...args) {
-		// console.log(args);
-		that = this;
-		subscribes.forEach(func => {
+		subscribes.slice().forEach(func => {
 			func.apply(that, args);
 		});
 
