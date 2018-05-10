@@ -11,7 +11,6 @@ function Event() {
 		subscribes.slice().forEach(func => {
 			func.apply(that, args);
 		});
-
 	};
 
 	this.unsubscribe = function (...funcs) {
