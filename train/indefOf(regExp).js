@@ -1,20 +1,17 @@
 String.prototype.indexOf = function (searchValue, fromIndex = 0) {
-    let str = this.slice(fromIndex);
-    let regexp = new RegExp(searchValue);
-    let index = (regexp.exec(str) || {index: -1}).index;
-    return index + (index === -1 ? 0 : fromIndex);
+    if (this.slice(fromIndex).search(new RegExp(searchValue)) === -1) return -1;
+
+    let regexp = new RegExp(searchValue, 'g');
+    let res = regexp.exec(this);
+    return res.index;
 };
 
-
-// look at here
-String.prototype.lastIndexOf = function (searchValue, fromIndex = 0) {
-    let str = this.slice(fromIndex);
-    let regexp = new RegExp(searchValue);
-    regexp.test(str);
-    return regexp.lastIndex;
+String.prototype.lastIndexOf = function (searchValue, fromIndex = this.length) {
+    let index = -1; 
+    while ((exec=this.indexOf(searchValue, index + 1)) !== -1 && exec <= fromIndex) {
+        index = exec;
+    }
+    return index;
 };
 
-
-console.log("abcba".lastIndexOf("b"), 3);
-
-console.log("abcba".lastIndexOf(/bc|cb/), 2);
+console.log("abcba".indexOf(/^c/, 2), 0);
