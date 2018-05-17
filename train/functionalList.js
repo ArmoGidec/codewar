@@ -1,6 +1,6 @@
 function List(head = new EmptyList()) {
     this._head = head;
-    this._len = head._len || 0;
+    this._len = head._len;
     return this;
 }
 
@@ -16,15 +16,13 @@ EmptyList.prototype.push = function (x) {
 EmptyList.prototype.toString = () => '()';
 EmptyList.prototype.isEmpty = () => true;
 EmptyList.prototype.length = () => 0;
-EmptyList.prototype.remove = function (x) { /* implement this */ };
-EmptyList.prototype.append = function (xs) {
-
-};
+EmptyList.prototype.remove = function (x) { return this; };
+EmptyList.prototype.append = function (xs) { return xs; };
 
 
 function ListNode(value = null, next = new EmptyList()) {
     this.value = value;
-    this.next = next;
+    this.next = Object.assign(next);
     this._len = (next._len || 0) + 1;
     return this;
 }
@@ -55,19 +53,21 @@ ListNode.prototype.length = function () {
 ListNode.prototype.push = function (x) {
     return new ListNode(x, this);
 };
-ListNode.prototype.remove = function (x) { /* implement this */ };
+ListNode.prototype.remove = function (x) { 
+    let node = Object.assign(this);
+    while (node.next instanceof ListNode) {
+        node = node.next;
+    }
+};
 ListNode.prototype.append = function (xs) {
-    // let node = this;
-    // while (node.next instanceof ListNode) {
-    //     node._len += xs._len;
-    //     node = node.next;
-    // }
-    // node.next = xs;
-    // node._len += xs._len;
-    return this;
+    if (xs.next instanceof EmptyList) return this.push(xs.value);
+    return this.append(xs.next).push(xs.value);
 };
 
 let elist = new EmptyList();
-let list1 = elist.push(1).push(2);
-let list2 = elist.push(4).push(4);
-console.log(elist.push(1).length());
+let list1 = elist.push('a').push('c');
+let list2 = elist.push('a').push('b');
+let list3 = list2.remove('a');
+
+console.log(list1.append(list2));
+console.log(list3);
