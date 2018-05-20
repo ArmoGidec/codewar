@@ -53,12 +53,13 @@ ListNode.prototype.length = function () {
 ListNode.prototype.push = function (x) {
     return new ListNode(x, this);
 };
-ListNode.prototype.remove = function (x) { 
-    let node = Object.assign(this);
-    while (node.next instanceof ListNode) {
-        node = node.next;
-    }
+ListNode.prototype.remove = function (x) {
+    this.next = this.next.remove(x);
+    this._len = (this.next._len || 0) + 1
+    if (this.value === x) return this.next;
+    return this;
 };
+
 ListNode.prototype.append = function (xs) {
     if (xs.next instanceof EmptyList) return this.push(xs.value);
     return this.append(xs.next).push(xs.value);
@@ -67,7 +68,13 @@ ListNode.prototype.append = function (xs) {
 let elist = new EmptyList();
 let list1 = elist.push('a').push('c');
 let list2 = elist.push('a').push('b');
-let list3 = list2.remove('a');
+let list3 = list1.append(list2);
+console.log(list3.toString());
 
-console.log(list1.append(list2));
-console.log(list3);
+let list4 = list3.remove('a');
+console.log(list3.toString());
+
+
+console.log(list4.remove(list4.head()) === list4.tail());
+console.log(list4);
+
