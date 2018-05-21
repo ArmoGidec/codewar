@@ -57,25 +57,28 @@ ListNode.prototype.push = function (x) {
     return new ListNode(x, this);
 };
 ListNode.prototype.remove = function (x) {
-    if (this instanceof EmptyList) return this;
-    if (this.value === x) return this.next.remove(x);
-    return this.next.remove(x).push(this.value);
+    this.next = this.next.remove(x);
+    this._len = (this.next._len || 0) + 1
+    if (this.value === x) return this.next;
+    return this;
 };
+
 ListNode.prototype.append = function (xs) {
     if (!(xs instanceof ListNode)) return this;
     if (this.next instanceof ListNode) return this.next.append(xs).push(this.value);
     return xs.push(this.value);
 };
 
-let mt = new EmptyList();
-let l1 = mt.push('a').push('b').push('c');
-let l2 = mt.push('a').push('b');
-let l3 = l1.append(l2);
-let l4 = l3.remove();
+let elist = new EmptyList();
+let list1 = elist.push('a').push('c');
+let list2 = elist.push('a').push('b');
+let list3 = list1.append(list2);
+console.log(list3.toString());
 
-console.log(l3.toString());
-console.log(l1.toString());
-console.log(l2.toString());
-console.log(l3.remove('a').toString());
+let list4 = list3.remove('a');
+console.log(list3.toString());
 
+
+console.log(list4.remove(list4.head()) === list4.tail());
+console.log(list4);
 
