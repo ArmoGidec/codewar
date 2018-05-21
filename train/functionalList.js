@@ -1,6 +1,5 @@
 function List(head = new EmptyList()) {
-    this._head = head;
-    this._len = head._len;
+    this.head = head;
     return this;
 }
 
@@ -20,13 +19,12 @@ EmptyList.prototype.remove = function (x) {
     return this;
 };
 EmptyList.prototype.append = function (xs) {
-    return xs;
+    return Object.assign(new xs.prototype.constructor(), xs);
 };
 
 function ListNode(value = null, next = new EmptyList()) {
     this.value = value;
     this.next = next;
-    this._len = (next._len || 0) + 1;
     return this;
 }
 
@@ -51,16 +49,20 @@ ListNode.prototype.tail = function () {
     return this.next;
 };
 ListNode.prototype.length = function () {
-    return this._len;
+    return 1 + this.next.length();
 };
 ListNode.prototype.push = function (x) {
     return new ListNode(x, this);
 };
 ListNode.prototype.remove = function (x) {
-    this.next = this.next.remove(x);
-    this._len = (this.next._len || 0) + 1
-    if (this.value === x) return this.next;
-    return this;
+    if (this instanceof EmptyList) return this;
+    let next = this.next.remove(x);
+    if (this.value !== x) {
+        if (next === this.next)
+            return this;
+        else return next.push(this.value);
+    }
+    else return next;
 };
 
 ListNode.prototype.append = function (xs) {
@@ -76,9 +78,8 @@ let list3 = list1.append(list2);
 console.log(list3.toString());
 
 let list4 = list3.remove('a');
-console.log(list3.toString());
 
+console.log(list3.toString());
+console.log(list4.toString());
 
 console.log(list4.remove(list4.head()) === list4.tail());
-console.log(list4);
-
