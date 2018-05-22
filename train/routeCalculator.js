@@ -7,9 +7,8 @@ function calculate(evaluate) {
         return parseFloat(evaluate);
     }
     let tree = parse(evaluate);
-    console.log(tree);
 
-    return null;
+    return tree;
 }
 
 function parse(evaluate) {
@@ -28,12 +27,13 @@ function parse(evaluate) {
             sign = true;
         }
     }
+    tree.push(value);
     return tree;
 }
 
 function BinaryTree() {
     this._head = null;
-    this._count = 0;
+    // this._count = 0;
     return this;
 }
 
@@ -43,7 +43,7 @@ BinaryTree.prototype.push = function(x) {
     } else {
         this._head = AddTo(this._head, x);
     }
-    this._count += 1;
+    // this._count += 1;
 };
 
 function AddTo(node, value) {
@@ -52,6 +52,8 @@ function AddTo(node, value) {
         return h;
     } else {
         let r = new BinaryTreeNode(value);
+        node._rigth = r;
+        return node;
     }
 }
 
@@ -62,7 +64,7 @@ function BinaryTreeNode(value = null, left = null, rigth = null) {
     return this;
 }
 
-console.log(calculate('55+5'), 20);
+console.log(calculate('55+5+5'), 20);
 // console.log(calculate('5-5-5-5'), -10);
 // console.log(calculate('5*5*5*5'), 625);
 // console.log(calculate('5$5$5$5'), 0.04);
