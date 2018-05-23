@@ -7,7 +7,7 @@ function calculate(evaluate) {
         return parseFloat(evaluate);
     }
     let tree = parse(evaluate);
-
+    
     return tree;
 }
 
