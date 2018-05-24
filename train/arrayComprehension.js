@@ -1,11 +1,12 @@
-function ArrayComprehension(options) {
-    if (!options.generator) return [];
-    if (!/\.\./.test(options.generator)) {
-        let res = options.generator.replace(/ /g, '').split(',').filter(val => /\d+/.test(val)).map(Number);
-        return res;
+function ArrayComprehension({generator, filters = [], transform = (a) => a}) {
+    if (!generator) return [];
+    let result;
+    if (!/\.\./.test(generator)) {
+        result = generator.replace(/ /g, '').split(',').filter(val => /\d+/.test(val)).map(Number);
+    } else {
+        result = parse(generator);
     }
-    let result = parse(options.generator);
-    return result;
+    return filters.reduce((array, filter) => array.filter(filter), result).map(transform);
 }
 
 /**
